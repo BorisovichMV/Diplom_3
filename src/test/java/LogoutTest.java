@@ -24,11 +24,11 @@ import pages.MainPage;
 import java.time.Duration;
 
 @RunWith(Parameterized.class)
-public class NavigateFromAccountToConstructorTest {
+public class LogoutTest {
     private final WebDriver driver;
     private User user;
 
-    public NavigateFromAccountToConstructorTest(String driverType) {
+    public LogoutTest(String driverType) {
         this.driver = DriverFactory.getDriver(driverType);
     }
 
@@ -36,7 +36,7 @@ public class NavigateFromAccountToConstructorTest {
     public static Object[][] getParameters() {
         return new Object[][]{
                 { "chrome" },
-                { "yandex" },
+//                { "yandex" },
         };
     }
 
@@ -71,39 +71,18 @@ public class NavigateFromAccountToConstructorTest {
     }
 
     @Test
-    @DisplayName("Тест перехода из аккаунта в конструктор по клику на логотип")
-    public void testNavigateFromAccountByHeaderButton() {
+    @DisplayName("Тест выхода по кнопке «Выход» на странице аккаунта")
+    public void testNavigateToAccount() {
         loginAndOpenAccount();
-        checkGoToConstructorByHeaderButton();
+        checkLogout();
     }
 
-    @Test
-    @DisplayName("Тест перехода из аккаунта в конструктор по клику на кнопку «Конструктор»")
-    public void testNavigateFromAccountByConstructorButton() {
-        loginAndOpenAccount();
-        checkGoToConstructorByConstructorButton();
-    }
-
-    @Step("Проверяем переход из аккаунта в конструктор по клику на логотип")
-    private void checkGoToConstructorByHeaderButton() {
+    @Step("Нажимаем на кнопку «Выход» и проверяем, что вышли")
+    private void checkLogout() {
         AccountPage accountPage = new AccountPage(driver);
-        accountPage.clickHeaderButton();
-        checkGoToConstructorPage();
+        accountPage.clickLogoutButton();
+        checkRedirectedToLoginPage();
     }
-
-    @Step("Проверяем переход из аккаунта в конструктор по клику на кнопку «Конструктор»")
-    private void checkGoToConstructorByConstructorButton() {
-        AccountPage accountPage = new AccountPage(driver);
-        accountPage.clickConstructorButton();
-        checkGoToConstructorPage();
-    }
-
-    @Step("Проверяем, что открылась страница конструктора")
-    private void checkGoToConstructorPage() {
-        MainPage mainPage = new MainPage(driver);
-        Assert.assertTrue(mainPage.isConstructorPageOpened());
-    }
-
 
     @Step("Логинимся и переходим в аккаунт")
     private void loginAndOpenAccount() {
