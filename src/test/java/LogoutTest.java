@@ -36,7 +36,7 @@ public class LogoutTest {
     public static Object[][] getParameters() {
         return new Object[][]{
                 { "chrome" },
-//                { "yandex" },
+                { "yandex" },
         };
     }
 
@@ -72,7 +72,7 @@ public class LogoutTest {
 
     @Test
     @DisplayName("Тест выхода по кнопке «Выход» на странице аккаунта")
-    public void testNavigateToAccount() {
+    public void testLogout() {
         loginAndOpenAccount();
         checkLogout();
     }

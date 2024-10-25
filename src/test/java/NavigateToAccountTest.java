@@ -17,7 +17,9 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import pages.*;
+import pages.AccountPage;
+import pages.LoginPage;
+import pages.MainPage;
 
 import java.time.Duration;
 
