@@ -14,6 +14,8 @@ public class AccountPage {
 
     private final By nameField = By.xpath("//input[@name='Name']");
     private final By emailField = By.xpath("//label[text()='Логин']/following-sibling::input[@name='name']");
+    private final By logo = By.xpath("//div[contains(@class, 'AppHeader_header__logo')]/a");
+    private final By constructorBtn = By.xpath("//ul[contains(@class, 'AppHeader_header__list')]/li/a[@href='/']");
 
     public String getPageUrl() {
         return pageUrl;
@@ -30,5 +32,13 @@ public class AccountPage {
 
     public String getEmail() {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(emailField)).getAttribute("value");
+    }
+
+    public void clickHeaderButton() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(logo)).click();
+    }
+
+    public void clickConstructorButton() {
+        wait.until(ExpectedConditions.elementToBeClickable(constructorBtn)).click();
     }
 }

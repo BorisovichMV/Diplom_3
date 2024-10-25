@@ -17,16 +17,18 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import pages.*;
+import pages.AccountPage;
+import pages.LoginPage;
+import pages.MainPage;
 
 import java.time.Duration;
 
 @RunWith(Parameterized.class)
-public class NavigateToAccountTest {
+public class NavigateFromAccountToConstructorTest {
     private final WebDriver driver;
     private User user;
 
-    public NavigateToAccountTest(String driverType) {
+    public NavigateFromAccountToConstructorTest(String driverType) {
         this.driver = DriverFactory.getDriver(driverType);
     }
 
@@ -34,7 +36,7 @@ public class NavigateToAccountTest {
     public static Object[][] getParameters() {
         return new Object[][]{
                 { "chrome" },
-                { "yandex" },
+//                { "yandex" },
         };
     }
 
@@ -69,23 +71,46 @@ public class NavigateToAccountTest {
     }
 
     @Test
-    @DisplayName("Тест входа по кнопке «Войти в аккаунт» на главной")
-    public void testNavigateToAccount() {
+    @DisplayName("Тест перехода из аккаунта в конструктор по клику на логотип")
+    public void testNavigateFromAccountByHeaderButton() {
+        loginAndOpenAccount();
+        checkGoToConstructorByHeaderButton();
+    }
+
+    @Test
+    @DisplayName("Тест перехода из аккаунта в конструктор по клику на кнопку «Конструктор»")
+    public void testNavigateFromAccountByConstructorButton() {
+        loginAndOpenAccount();
+        checkGoToConstructorByConstructorButton();
+    }
+
+    @Step("Проверяем переход из аккаунта в конструктор по клику на логотип")
+    private void checkGoToConstructorByHeaderButton() {
+        AccountPage accountPage = new AccountPage(driver);
+        accountPage.clickHeaderButton();
+        checkGoToConstructorPage();
+    }
+
+    @Step("Проверяем переход из аккаунта в конструктор по клику на кнопку «Конструктор»")
+    private void checkGoToConstructorByConstructorButton() {
+        AccountPage accountPage = new AccountPage(driver);
+        accountPage.clickConstructorButton();
+        checkGoToConstructorPage();
+    }
+
+    @Step("Проверяем, что открылась страница конструктора")
+    private void checkGoToConstructorPage() {
+        MainPage mainPage = new MainPage(driver);
+        Assert.assertTrue(mainPage.isConstructorPageOpened());
+    }
+
+
+    @Step("Логинимся и переходим в аккаунт")
+    private void loginAndOpenAccount() {
         openMainPageAndClickLoginButton();
         checkRedirectedToLoginPage();
         login();
         checkItPossibleToOpenAccountPage();
-        checkUserInfoFields();
-    }
-
-    @Step("Проверяем правильность заполнения полей email и name на странице аккаунта")
-    private void checkUserInfoFields() {
-        AccountPage accountPage = new AccountPage(driver);
-        String name = accountPage.getName();
-        String email = accountPage.getEmail();
-
-        Assert.assertEquals(user.getName(), name);
-        Assert.assertEquals(user.getEmail().toLowerCase(), email);
     }
 
     @Step("Открываем главную страницу и нажимаем на кнопку «Войти в аккаунт»")

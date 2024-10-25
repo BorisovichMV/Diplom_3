@@ -15,6 +15,8 @@ public class MainPage {
     private By accountButton = By.cssSelector("a[href='/account']");
     private By loginButton = By.xpath("//button[text()='Войти в аккаунт']");
 
+    private By callToConstructTheBurger = By.xpath("//h1[text()='Соберите бургер']");
+
     public String getPageUrl() {
         return pageUrl;
     }
@@ -34,5 +36,14 @@ public class MainPage {
 
     public void clickLoginButton() {
         this.wait.until(ExpectedConditions.elementToBeClickable(loginButton)).click();
+    }
+
+    public boolean isConstructorPageOpened() {
+        try {
+            wait.until(ExpectedConditions.visibilityOfElementLocated(callToConstructTheBurger));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
