@@ -147,7 +147,7 @@ public class LoginTest {
             new WebDriverWait(driver, Duration.ofSeconds(6)).until(ExpectedConditions.urlContains(mainPage.getPageUrl()));
         } catch (Exception ignored) {}
         takeScreenshot(this.driver);
-        Assert.assertTrue(driver.getCurrentUrl().contains(mainPage.getPageUrl()));
+        Assert.assertTrue(mainPage.isConstructorPageOpened());
     }
 
     @Step("Нажимеам на кнопку «Личный кабинет»")
