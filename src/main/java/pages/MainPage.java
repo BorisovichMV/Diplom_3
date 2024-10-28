@@ -86,21 +86,21 @@ public class MainPage {
     public boolean isBunsSectionAtTop() throws InterruptedException {
         WebElement container = wait.until(ExpectedConditions.visibilityOfElementLocated(scrollableContainer));
         WebElement section = wait.until(ExpectedConditions.visibilityOfElementLocated(bunsSection));
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         return isElementAtTop(container, section);
     }
 
     public boolean isSaucesSectionAtTop() throws InterruptedException {
         WebElement container = wait.until(ExpectedConditions.visibilityOfElementLocated(scrollableContainer));
         WebElement section = wait.until(ExpectedConditions.visibilityOfElementLocated(saucesSection));
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         return isElementAtTop(container, section);
     }
 
     public boolean isFillingsSectionAtTop() throws InterruptedException {
         WebElement container = wait.until(ExpectedConditions.visibilityOfElementLocated(scrollableContainer));
         WebElement section = wait.until(ExpectedConditions.visibilityOfElementLocated(fillingsSection));
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         return isElementAtTop(container, section);
     }
 }

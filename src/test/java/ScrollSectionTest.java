@@ -1,74 +1,40 @@
-import helpers.DriverFactory;
-import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.openqa.selenium.WebDriver;
-import pages.MainPage;
 
-import static steps.UtilitySteps.takeScreenshot;
+import static steps.MainPageSteps.*;
 
 @RunWith(Parameterized.class)
-public class ScrollSectionTest {
-    private final WebDriver driver;
+public class ScrollSectionTest extends BaseTest {
 
     public ScrollSectionTest(String driverType) {
-        this.driver = DriverFactory.getDriver(driverType);
-    }
-
-    @Parameterized.Parameters
-    public static Object[][] getParameters() {
-        return new Object[][]{
-                { "chrome" },
-                { "yandex" },
-        };
-    }
-
-    @After
-    public void teardown() {
-        if (driver != null) {
-            driver.quit();
-        }
+        super(driverType);
     }
 
     @Test
     @DisplayName("Тест прокрутки секций")
-    public void testScrollSection() throws InterruptedException {
-        openMainPage();
-        checkScrollOnSauces();
-        checkScrollOnFillings();
-        checkScrollOnBuns();
+    public void testScrollOnSauces() throws InterruptedException {
+        openMainPage(this.driver);
+        clickOnSauces(this.driver);
+        Assert.assertTrue(isSaucesSectionAtTop(this.driver));
     }
 
-    @Step("Проверяем прокрутку до секции соусов")
-    private void checkScrollOnSauces() throws InterruptedException {
-        MainPage mainPage = new MainPage(driver);
-        mainPage.clickSaucesButton();
-        takeScreenshot(driver);
-        Assert.assertTrue(mainPage.isSaucesSectionAtTop());
+    @Test
+    @DisplayName("Тест прокрутки секций")
+    public void testScrollOnFillings() throws InterruptedException {
+        openMainPage(this.driver);
+        clickOnFillings(this.driver);
+        Assert.assertTrue(isFillingsSectionAtTop(this.driver));
     }
 
-    @Step("Проверяем прокрутку до секции начинок")
-    private void checkScrollOnFillings() throws InterruptedException {
-        MainPage mainPage = new MainPage(driver);
-        mainPage.clickFillingsButton();
-        takeScreenshot(driver);
-        Assert.assertTrue(mainPage.isFillingsSectionAtTop());
-    }
-    @Step("Проверяем прокрутку до секции булочек")
-    private void checkScrollOnBuns() throws InterruptedException {
-        MainPage mainPage = new MainPage(driver);
-        mainPage.clickBunsButton();
-        takeScreenshot(driver);
-        Assert.assertTrue(mainPage.isBunsSectionAtTop());
-    }
-
-    @Step("Открываем главную страницу")
-    private void openMainPage() {
-        MainPage mainPage = new MainPage(driver);
-        mainPage.open();
+    @Test
+    @DisplayName("Тест прокрутки секций")
+    public void testScrollOnBuns() throws InterruptedException {
+        openMainPage(this.driver);
+        clickOnFillings(this.driver);
+        clickOnBuns(this.driver);
+        Assert.assertTrue(isBunsSectionAtTop(this.driver));
     }
 }

@@ -1,234 +1,37 @@
-import entities.User;
-import entities.UserLoginModel;
-import entities.UserRegistrationModel;
-import helpers.DriverFactory;
-import helpers.RandomStringGenerator;
-import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
-import io.restassured.path.json.JsonPath;
-import io.restassured.response.Response;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import pages.AccountPage;
-import pages.LoginPage;
-import pages.MainPage;
 
-import java.time.Duration;
-
-import static steps.UtilitySteps.takeScreenshot;
+import static steps.AccountPageSteps.goToMainPageByConstructorButton;
+import static steps.AccountPageSteps.goToMainPageByHeaderButton;
+import static steps.LoginPageSteps.login;
+import static steps.MainPageSteps.isMainPageOpened;
+import static steps.MainPageSteps.openMainPageAndClickAccountButton;
 
 @RunWith(Parameterized.class)
-public class NavigateFromAccountToConstructorTest {
-    private final WebDriver driver;
-    private User user;
+public class NavigateFromAccountToConstructorTest extends BaseTestWithCreatedUser {
 
     public NavigateFromAccountToConstructorTest(String driverType) {
-        this.driver = DriverFactory.getDriver(driverType);
-    }
-
-    @Parameterized.Parameters
-    public static Object[][] getParameters() {
-        return new Object[][]{
-                { "chrome" },
-                { "yandex" },
-        };
-    }
-
-    @BeforeClass
-    public static void setUp() {
-        RestAssured.baseURI = "https://stellarburgers.nomoreparties.site/api";
-    }
-
-    @Before
-    public void setup() {
-        String name = RandomStringGenerator.generateUsername();
-        String email = RandomStringGenerator.generateEmail();
-        String password = RandomStringGenerator.generatePassword(6);
-        this.user = new User(email, name, password);
-        createUser();
-    }
-
-    @After
-    public void teardown() {
-        if (driver != null) {
-            driver.quit();
-        }
-        if (user != null && user.getAccessToken() != null) {
-            loginUser();
-            deleteUser(user);
-        }
+        super(driverType);
     }
 
     @Test
     @DisplayName("Тест перехода из аккаунта в конструктор по клику на логотип")
     public void testNavigateFromAccountByHeaderButton() {
-        loginAndOpenAccount();
-        checkGoToConstructorByHeaderButton();
+        openMainPageAndClickAccountButton(this.driver);
+        login(this.driver, this.user);
+        goToMainPageByHeaderButton(this.driver);
+        Assert.assertTrue("Ожидалось открытие главной страницы", isMainPageOpened(this.driver));
     }
 
     @Test
     @DisplayName("Тест перехода из аккаунта в конструктор по клику на кнопку «Конструктор»")
     public void testNavigateFromAccountByConstructorButton() {
-        loginAndOpenAccount();
-        checkGoToConstructorByConstructorButton();
-    }
-
-    @Step("Проверяем переход из аккаунта в конструктор по клику на логотип")
-    private void checkGoToConstructorByHeaderButton() {
-        AccountPage accountPage = new AccountPage(driver);
-        accountPage.clickHeaderButton();
-        checkGoToConstructorPage();
-    }
-
-    @Step("Проверяем переход из аккаунта в конструктор по клику на кнопку «Конструктор»")
-    private void checkGoToConstructorByConstructorButton() {
-        AccountPage accountPage = new AccountPage(driver);
-        accountPage.clickConstructorButton();
-        checkGoToConstructorPage();
-    }
-
-    @Step("Проверяем, что открылась страница конструктора")
-    private void checkGoToConstructorPage() {
-        MainPage mainPage = new MainPage(driver);
-        Assert.assertTrue(mainPage.isConstructorPageOpened());
-    }
-
-
-    @Step("Логинимся и переходим в аккаунт")
-    private void loginAndOpenAccount() {
-        openMainPageAndClickLoginButton();
-        checkRedirectedToLoginPage();
-        login();
-        checkItPossibleToOpenAccountPage();
-    }
-
-    @Step("Открываем главную страницу и нажимаем на кнопку «Войти в аккаунт»")
-    private void openMainPageAndClickLoginButton() {
-        MainPage mainPage = new MainPage(driver);
-        mainPage.open();
-        mainPage.clickLoginButton();
-    }
-
-    @Step("Входим в аккаунт")
-    private void login() {
-        fillAndSubmitLoginForm();
-        checkRedirectToMainPage();
-    }
-
-    @Step("Заполняем и нажимаем на кнопку «Войти»")
-    private void fillAndSubmitLoginForm() {
-        LoginPage loginPage = new LoginPage(driver);
-        loginPage.fillLoginForm(user.getEmail(), user.getPassword());
-        takeScreenshot(this.driver);
-        loginPage.submitLoginForm();
-    }
-
-    @Step("Проверяем, что выполнен редирект на главную страницу")
-    private void checkRedirectToMainPage() {
-        MainPage mainPage = new MainPage(driver);
-        try {
-            new WebDriverWait(driver, Duration.ofSeconds(6)).until(ExpectedConditions.urlContains(mainPage.getPageUrl()));
-        } catch (Exception ignored) {}
-        takeScreenshot(this.driver);
-        Assert.assertTrue(driver.getCurrentUrl().contains(mainPage.getPageUrl()));
-    }
-
-    @Step("Нажимеам на кнопку «Личный кабинет»")
-    private void checkItPossibleToOpenAccountPage() {
-        MainPage mainPage = new MainPage(driver);
-        mainPage.clickAccountButton();
-        checkRedirectedToAccountPage();
-    }
-
-    @Step("Проверяем, что перешли на страницу аккаунта")
-    private void checkRedirectedToAccountPage() {
-        AccountPage accountPage = new AccountPage(driver);
-        try {
-            new WebDriverWait(driver, Duration.ofSeconds(6)).until(ExpectedConditions.urlContains(accountPage.getPageUrl()));
-        } catch (Exception ignored) {}
-        takeScreenshot(this.driver);
-        Assert.assertEquals(accountPage.getPageUrl(), driver.getCurrentUrl());
-    }
-
-    @Step("Проверяем, что перешли на страницу авторизации")
-    private void checkRedirectedToLoginPage() {
-        LoginPage loginPage = new LoginPage(driver);
-        try {
-            new WebDriverWait(driver, Duration.ofSeconds(6)).until(ExpectedConditions.urlContains(loginPage.getPageUrl()));
-        } catch (Exception ignored) {}
-        takeScreenshot(this.driver);
-        Assert.assertEquals(loginPage.getPageUrl(), driver.getCurrentUrl());
-    }
-
-    @Step("Отправляем запрос на создание пользователя")
-    private void createUser() {
-        Response response = sendRequest("POST", UserRegistrationModel.fromUser(user), "/auth/register", 200);
-        rememberTokens(response.jsonPath());
-    }
-
-    @Step("Отправляем запрос на вход пользователя")
-    private void loginUser() {
-        UserLoginModel model = UserLoginModel.fromUser(user);
-        Response response = sendRequest("POST", model, "/auth/login", 200);
-        rememberTokens(response.jsonPath());
-    }
-
-    @Step("Запоминаем токены")
-    private void rememberTokens(JsonPath jsonPath) {
-        boolean isSuccessful = jsonPath.getBoolean("success");
-        Assert.assertTrue(isSuccessful);
-        String accessToken = jsonPath.getString("accessToken");
-        String refreshToken = jsonPath.getString("refreshToken");
-        this.user.setAccessToken(accessToken);
-        this.user.setRefreshToken(refreshToken);
-    }
-
-    @Step("Отправляем запрос")
-    private Response sendRequest(String method, Object obj, String uri, Integer statusCode) {
-        return RestAssured.given()
-                .header("Content-Type", "application/json")
-                .body(obj)
-                .log().body()
-                .when()
-                .request(method, uri)
-                .then()
-                .log().body()
-                .statusCode(statusCode)
-                .extract().response();
-    }
-
-    @Step("Отправляем запрос с авторизацией")
-    private Response sendAuthorizedRequest(String method, Object obj, String uri, Integer statusCode) {
-        if (method.equals("DELETE")) {
-            return RestAssured.given()
-                    .header("Authorization", user.getAccessToken())
-                    .when()
-                    .request(method, uri)
-                    .then()
-                    .log().body()
-                    .statusCode(statusCode)
-                    .extract().response();
-        }
-        return RestAssured.given()
-                .header("Authorization", user.getAccessToken())
-                .header("Content-Type", "application/json")
-                .body(obj)
-                .log().body()
-                .when()
-                .request(method, uri)
-                .then()
-                .log().body()
-                .statusCode(statusCode)
-                .extract().response();
-    }
-
-    @Step("Удаляем пользователя")
-    private void deleteUser(User user) {
-        sendAuthorizedRequest("DELETE", user, "/auth/user", 202);
+        openMainPageAndClickAccountButton(this.driver);
+        login(this.driver, this.user);
+        goToMainPageByConstructorButton(this.driver);
+        Assert.assertTrue("Ожидалось открытие главной страницы", isMainPageOpened(this.driver));
     }
 }
