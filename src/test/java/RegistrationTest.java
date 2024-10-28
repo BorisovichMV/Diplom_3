@@ -2,7 +2,6 @@ import entities.User;
 import entities.UserLoginModel;
 import helpers.DriverFactory;
 import helpers.RandomStringGenerator;
-import io.qameta.allure.Attachment;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.RestAssured;
@@ -11,14 +10,14 @@ import io.restassured.response.Response;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pages.RegistrationPage;
 
 import java.time.Duration;
+
+import static steps.UtilitySteps.takeScreenshot;
 
 @RunWith(Parameterized.class)
 public class RegistrationTest {
@@ -55,11 +54,6 @@ public class RegistrationTest {
                 { 10, "yandex", true },
                 { 50, "yandex", true },
         };
-    }
-
-    @Attachment(value = "Page screenshot", type = "image/png")
-    public static byte[] takeScreenshot(WebDriver driver) {
-        return ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
     }
 
     @BeforeClass
