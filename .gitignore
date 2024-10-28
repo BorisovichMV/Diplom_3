@@ -1,1 +1,5 @@
 /.idea/
+/src/main/resources/yandexDriver/yandexdriver.exe
+/.allure/
+/target/
+!/target/allure-results/**
